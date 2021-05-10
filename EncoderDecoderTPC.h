@@ -34,6 +34,8 @@ struct pixelCoulour{//red,green,blue,alpha
 };
 
 
+
+
 //basic commands
 void encodeTPC(string fileName);
 void decodeTPC(string fileName);
@@ -43,6 +45,8 @@ void imageLoad(string fileName,Image &img);
 void imageSave(string fileName,string dataString);
 void makeRGB(Image &img,uint16_t x,uint16_t y,std::vector<int> &valuesBuffer,std::vector<pixelCoulour> &pixelsBuffer);
 int searchPixelCoulour(std::vector<pixelCoulour> pixelsBuffer, pixelCoulour& pixelCoulour);
+bool operator==(pixelCoulour first,pixelCoulour second);
+
 //tpc header?
 
 //tpc encode modes
@@ -85,6 +89,7 @@ void encodeTPC(string fileName){
       makeRGB(img,x,y,valuesBuffer,pixelsBuffer);
     }
   }
+  cout<<valuesBuffer.size()<<endl;
 
   imageSave(fileName,dataString);
   std::cout<<"encoding finished"<<endl<<endl;
@@ -178,6 +183,9 @@ void imageSave(string fileName,string dataString){
   std::cout<<"image saved"<<endl;
   return;
 }
+bool operator==(pixelCoulour first,pixelCoulour second){
+  return (first.r==second.r && first.g==second.g && first.b==second.b);
+}
 void makeRGB(Image &img,uint16_t x,uint16_t y,std::vector<int>& valuesBuffer,std::vector<pixelCoulour>& pixelsBuffer){
   unsigned char* pixel = img.data + (y * img.width + x) * img.channels;
   unsigned char r = pixel[0];
@@ -198,25 +206,15 @@ void makeRGB(Image &img,uint16_t x,uint16_t y,std::vector<int>& valuesBuffer,std
   if(std::find(valuesBuffer.begin(), valuesBuffer.end(), (int)a) == valuesBuffer.end()){//if alpha value not in valuesBuffer
     valuesBuffer.push_back((int)a);
   }
-
-  pixelCoulour temp{r,g,b,a};
+  /*
+  pixelCoulour temp{r,g,b};
   if(std::find(pixelsBuffer.begin(), pixelsBuffer.end(),temp) == pixelsBuffer.end()){
     pixelsBuffer.push_back(temp);
   }
+*/
   //cout<<"r: "<<(int)r<<"  g: "<<(int)g<<"  b: "<<(int)b<<endl;
 }
-/*
-int searchPixelCoulour(std::vector<pixelCoulour> pixelsBuffer, pixelCoulour& pixelCoulour) {
-  int index{};
-  for (auto& value : pixelsBuffer) {      
-    if (value == pixelCoulour) {
-      return index;
-    }
-  index++;
-  }
-  return -1;
-}
-*/
+
 
 string getBits(boost::dynamic_bitset<>&bitset,int pointerPos,int numberOfBits){//concern bitset e.g.  getBits(bitset,16,8); would read from 16 to 23
   string bitsReturned;
